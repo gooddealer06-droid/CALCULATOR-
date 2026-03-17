@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class A Calculator - Web Frontend</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            padding: 20px;
+        }
+        .calculator { 
+            background: rgba(255,255,255,0.95); 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px; 
+            width: 100%;
+        }
+        h1 { 
+            text-align: center; 
+            color: #333; 
+            margin-bottom: 30px; 
+            font-size: 28px;
+        }
+        .input-group { 
+            margin-bottom: 20px; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            color: #555; 
+            font-weight: 500;
+        }
+        input[type="number"] { 
+            width: 100%; 
+            padding: 15px; 
+            border: 2px solid #e1e5e9; 
+            border-radius: 10px; 
+            font-size: 18px; 
+            transition: border-color 0.3s;
+        }
+        input[type="number"]:focus { 
+            outline: none; 
+            border-color: #667eea; 
+        }
+        select { 
+            width: 100%; 
+            padding: 15px; 
+            border: 2px solid #e1e5e9; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            background: white;
+            cursor: pointer;
+        }
+        select:focus { 
+            outline: none; 
+            border-color: #667eea; 
+        }
+        .calculate-btn { 
+            width: 100%; 
+            padding: 18px; 
+            background: linear-gradient(45deg, #667eea, #764ba2); 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 20px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .calculate-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .result { 
+            margin-top: 25px; 
+            padding: 20px; 
+            background: #f8f9ff; 
+            border-radius: 12px; 
+            border-left: 5px solid #667eea; 
+            font-family: 'Courier New', monospace; 
+            font-size: 18px; 
+            min-height: 60px; 
+            white-space: pre-wrap;
+        }
+        .error { 
+            border-left-color: #e74c3c !important; 
+            background: #fdf2f2 !important; 
+            color: #c0392b !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>🧮 Class A Calculator</h1>
+        
+        <div class="input-group">
+            <label for="numA">Number A:</label>
+            <input type="number" id="numA" value="5" step="any">
+        </div>
+        
+        <div class="input-group">
+            <label for="numB">Number B:</label>
+            <input type="number" id="numB" value="3" step="any">
+        </div>
+        
+        <div class="input-group">
+            <label for="operation">Select Operation:</label>
+            <select id="operation">
+                <option value="1">1. Addition (a + b)</option>
+                <option value="2">2. Subtraction (a - b)</option>
+                <option value="3">3. Multiplication (a * b)</option>
+                <option value="4">4. Division (a / b)</option>
+                <option value="5">5. Modulus (a % b)</option>
+                <option value="6">6. Power (a^b)</option>
+                <option value="7">7. Factorial (a!)</option>
+                <option value="8">8. Sin(a°)</option>
+                <option value="9">9. Cos(a°)</option>
+                <option value="10">10. Tan(a°)</option>
+                <option value="11">11. Natural Log(ln(a))</option>
+                <option value="12">12. Exponential (e^a)</option>
+                <option value="13">13. Square Root (√a)</option>
+                <option value="14">14. Cube Root (∛a)</option>
+                <option value="15">15. Absolute Value (|a|)</option>
+                <option value="16">16. Log Base-10 (log₁₀(a))</option>
+                <option value="17">17. Root (√a)</option>
+            </select>
+        </div>
+        
+        <button class="calculate-btn" onclick="calculate()">Calculate</button>
+        <div id="result" class="result">Enter numbers and select operation to begin...</div>
+    </div>
+
+    <script>
+        function toRadians(deg) {
+            return deg * Math.PI / 180;
+        }
+
+        function factorial(n) {
+            if (n < 0 || Math.floor(n) !== n) return "factorial=Factorial undefined for negative/non-integer";
+            let result = 1;
+            for (let i = 1; i <= n; i++) {
+                result *= i;
+            }
+            return `factorial=${result}`;
+        }
+
+        function power(base, exp) {
+            let result = 1;
+            for (let i = 0; i < exp; i++) {
+                result *= base;
+            }
+            return `power=${result}`;
+        }
+
+        function calculate() {
+            const a = parseFloat(document.getElementById('numA').value);
+            const b = parseFloat(document.getElementById('numB').value);
+            const choice = parseInt(document.getElementById('operation').value);
+            const resultDiv = document.getElementById('result');
+
+            if (isNaN(a) || isNaN(b)) {
+                resultDiv.innerHTML = "Invalid numbers entered!";
+                resultDiv.className = 'result error';
+                return;
+            }
+
+            let output;
+            
+            switch(choice) {
+                case 1: 
+                    output = `addition=${a + b}`; 
+                    break;
+                case 2: 
+                    output = `subtract=${a - b}`; 
+                    break;
+                case 3: 
+                    output = `multiply=${a * b}`; 
+                    break;
+                case 4: 
+                    if (b === 0) {
+                        output = "division by zero is not allowed";
+                    } else {
+                        output = `divide=${a / b}`;
+                    }
+                    break;
+                case 5: 
+                    if (b === 0) {
+                        output = "modulus by zero is not allowed";
+                    } else {
+                        output = `modulus=${Math.floor(a) % Math.floor(b)}`;
+                    }
+                    break;
+                case 6: 
+                    output = power(a, b); 
+                    break;
+                case 7: 
+                    output = factorial(a); 
+                    break;
+                case 8: 
+                    output = `sin(${a}) = ${Math.sin(toRadians(a)).toFixed(6)}`; 
+                    break;
+                case 9: 
+                    output = `cos(${a}) = ${Math.cos(toRadians(a)).toFixed(6)}`; 
+                    break;
+                case 10: 
+                    output = `tan(${a}) = ${Math.tan(toRadians(a)).toFixed(6)}`; 
+                    break;
+                case 11: 
+                    if (a > 0) {
+                        output = `log(${a}) = ${Math.log(a).toFixed(6)}`;
+                    } else {
+                        output = "logarithm of non-positive number is not defined";
+                    }
+                    break;
+                case 12: 
+                    output = `exp(${a}) = ${Math.exp(a).toFixed(6)}`; 
+                    break;
+                case 13: 
+                    if (a >= 0) {
+                        output = `sqrt(${a}) = ${Math.sqrt(a).toFixed(6)}`;
+                    } else {
+                        output = "square root of negative number is not defined";
+                    }
+                    break;
+                case 14: 
+                    output = `cbrt(${a}) = ${Math.cbrt(a).toFixed(6)}`; 
+                    break;
+                case 15: 
+                    output = `abs(${a}) = ${Math.abs(a)}`; 
+                    break;
+                case 16: 
+                    if (a > 0) {
+                        output = `log10(${a}) = ${Math.log10(a).toFixed(6)}`;
+                    } else {
+                        output = "logarithm of non-positive number is not defined";
+                    }
+                    break;
+                case 17: 
+                    if (a >= 0) {
+                        output = `sqrt(${a}) = ${Math.sqrt(a).toFixed(6)}`;
+                    } else {
+                        output = "negative root is not defined";
+                    }
+                    break;
+                default: 
+                    output = "Invalid choice";
+            }
+            
+            resultDiv.innerHTML = output;
+            resultDiv.className = output.includes("not allowed") || output.includes("not defined") || output.includes("undefined") 
+                ? 'result error' 
+                : 'result';
+        }
+
+        // Allow Enter key to calculate
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') calculate();
+        });
+    </script>
+</body>
+</html>
